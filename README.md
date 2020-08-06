@@ -1,2 +1,2 @@
 # CPPWorldgen
-Completely procedurally voxel generated world. No models, textures: no nothing predefined.
+Completely procedurally generated voxel world in C++, OpenGL. No models, textures: no nothing predefined.

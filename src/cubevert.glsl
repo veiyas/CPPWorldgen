@@ -24,7 +24,7 @@ void main()
 {
     //Out variables
     position = vec3(_offset * vec4(_position * (1.0/blockSizeOffset), 1.0));
-    light = normalize(vec3(worldWidth/100, 0, worldLength/100));
+    light = normalize(vec3(5*sin(time) * worldWidth/100, 0, 5*cos(time) * worldLength/100));
     normal = normalize(vec3(_offset * vec4(_normal * (1.0/blockSizeOffset), 1.0)));
     surfaceDirection = checkSurface(_normal);
     st = _texCoord;

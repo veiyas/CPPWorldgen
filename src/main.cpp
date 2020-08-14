@@ -79,6 +79,7 @@ int main()
 
 	glEnable(GL_DEPTH_TEST); // Use the Z buffer
 	glEnable(GL_CULL_FACE);  // Use back face culling
+	glEnable(GL_MULTISAMPLE);
 	glCullFace(GL_BACK);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Wireframe
 
@@ -110,6 +111,8 @@ int main()
 		fpsString = "FPS: " + std::to_string(1.0 / deltaTime);
 		glfwSetWindowTitle(window, fpsString.c_str());
 		currentTime = glfwGetTime();
+
+		glUniform1f(timeLocation, currentTime);
 
 		//Update camera
 		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));

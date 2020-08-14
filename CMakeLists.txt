@@ -18,6 +18,10 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/cube.cpp
   src/cube.hpp
+  src/noisegenerator.hpp
+  src/noisegenerator.cpp
+  src/world.cpp
+  src/world.hpp
   src/shaderprogram.cpp
   src/shaderprogram.hpp
   src/cubevert.glsl

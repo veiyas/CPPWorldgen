@@ -1,41 +1,43 @@
 #include "cube.hpp"
 
+std::vector<glm::vec3> Cube::_translations;
+
 Cube::Cube(const int x, const int y, const int z)
 {
-    constexpr GLfloat block_size = 1.f;
+    
     // The data array contains 8 floats per vertex:
     // coordinate xyz, normal xyz, texcoords st
     GLfloat vertex_array_data[] = {
         //Back face
-       -block_size, -block_size, -block_size,   0.0f, 0.0f,-1.0f,   0.0f, 1.0f / 3.0f,  // Vertex 0
-        block_size, -block_size, -block_size,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f / 3.0f,  // Vertex 1
-       -block_size,  block_size, -block_size,   0.0f, 0.0f,-1.0f,   0.0f, 2.0f / 3.0f,  // Vertex 2
-        block_size,  block_size, -block_size,   0.0f, 0.0f,-1.0f,   1.0f, 2.0f / 3.0f,  // Vertex 3
+       -_blockSize, -_blockSize, -_blockSize,   0.0f, 0.0f,-1.0f,   0.0f, 1.0f / 3.0f,  // Vertex 0
+        _blockSize, -_blockSize, -_blockSize,   0.0f, 0.0f,-1.0f,   1.0f, 1.0f / 3.0f,  // Vertex 1
+       -_blockSize,  _blockSize, -_blockSize,   0.0f, 0.0f,-1.0f,   0.0f, 2.0f / 3.0f,  // Vertex 2
+        _blockSize,  _blockSize, -_blockSize,   0.0f, 0.0f,-1.0f,   1.0f, 2.0f / 3.0f,  // Vertex 3
          //Front face
-       -block_size, -block_size,  block_size,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f / 3.0f,  // Vertex 4
-        block_size, -block_size,  block_size,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f / 3.0f,  // Vertex 5
-       -block_size,  block_size,  block_size,   0.0f, 0.0f, 1.0f,   0.0f, 2.0f / 3.0f,  // Vertex 6
-        block_size,  block_size,  block_size,   0.0f, 0.0f, 1.0f,   1.0f, 2.0f / 3.0f,  // Vertex 7
+       -_blockSize, -_blockSize,  _blockSize,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f / 3.0f,  // Vertex 4
+        _blockSize, -_blockSize,  _blockSize,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f / 3.0f,  // Vertex 5
+       -_blockSize,  _blockSize,  _blockSize,   0.0f, 0.0f, 1.0f,   0.0f, 2.0f / 3.0f,  // Vertex 6
+        _blockSize,  _blockSize,  _blockSize,   0.0f, 0.0f, 1.0f,   1.0f, 2.0f / 3.0f,  // Vertex 7
          //Right face
-        block_size, -block_size,  block_size,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f / 3.0f,  // Vertex 5 - 8
-        block_size, -block_size, -block_size,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f / 3.0f,  // Vertex 1 - 9
-        block_size,  block_size,  block_size,   1.0f, 0.0f, 0.0f,   0.0f, 2.0f / 3.0f,  // Vertex 7 - 10
-        block_size,  block_size, -block_size,   1.0f, 0.0f, 0.0f,   1.0f, 2.0f / 3.0f,  // Vertex 3 - 11
+        _blockSize, -_blockSize,  _blockSize,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f / 3.0f,  // Vertex 5 - 8
+        _blockSize, -_blockSize, -_blockSize,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f / 3.0f,  // Vertex 1 - 9
+        _blockSize,  _blockSize,  _blockSize,   1.0f, 0.0f, 0.0f,   0.0f, 2.0f / 3.0f,  // Vertex 7 - 10
+        _blockSize,  _blockSize, -_blockSize,   1.0f, 0.0f, 0.0f,   1.0f, 2.0f / 3.0f,  // Vertex 3 - 11
          //Left face
-       -block_size, -block_size, -block_size,  -1.0f, 0.0f, 0.0f,   0.0f, 1.0f / 3.0f,  // Vertex 0 - 12
-       -block_size, -block_size,  block_size,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f / 3.0f,  // Vertex 4 - 13
-       -block_size,  block_size, -block_size,  -1.0f, 0.0f, 0.0f,   0.0f, 2.0f / 3.0f,  // Vertex 2 - 14
-       -block_size,  block_size,  block_size,  -1.0f, 0.0f, 0.0f,   1.0f, 2.0f / 3.0f,  // Vertex 6 - 15
+       -_blockSize, -_blockSize, -_blockSize,  -1.0f, 0.0f, 0.0f,   0.0f, 1.0f / 3.0f,  // Vertex 0 - 12
+       -_blockSize, -_blockSize,  _blockSize,  -1.0f, 0.0f, 0.0f,   1.0f, 1.0f / 3.0f,  // Vertex 4 - 13
+       -_blockSize,  _blockSize, -_blockSize,  -1.0f, 0.0f, 0.0f,   0.0f, 2.0f / 3.0f,  // Vertex 2 - 14
+       -_blockSize,  _blockSize,  _blockSize,  -1.0f, 0.0f, 0.0f,   1.0f, 2.0f / 3.0f,  // Vertex 6 - 15
          //Top face
-       -block_size,  block_size,  block_size,   0.0f, 1.0f, 0.0f,   0.0f,  2.0f / 3.0f, // Vertex 6 - 16
-        block_size,  block_size,  block_size,   0.0f, 1.0f, 0.0f,   1.0f,  2.0f / 3.0f, // Vertex 7 - 17
-       -block_size,  block_size, -block_size,   0.0f, 1.0f, 0.0f,   0.0f,  1.0f,      // Vertex 2 - 18
-        block_size,  block_size, -block_size,   0.0f, 1.0f, 0.0f,   1.0f,  1.0f,      // Vertex 3 - 19
+       -_blockSize,  _blockSize,  _blockSize,   0.0f, 1.0f, 0.0f,   0.0f,  2.0f / 3.0f, // Vertex 6 - 16
+        _blockSize,  _blockSize,  _blockSize,   0.0f, 1.0f, 0.0f,   1.0f,  2.0f / 3.0f, // Vertex 7 - 17
+       -_blockSize,  _blockSize, -_blockSize,   0.0f, 1.0f, 0.0f,   0.0f,  1.0f,      // Vertex 2 - 18
+        _blockSize,  _blockSize, -_blockSize,   0.0f, 1.0f, 0.0f,   1.0f,  1.0f,      // Vertex 3 - 19
          //Bottom face
-       -block_size, -block_size, -block_size,   0.0f,-1.0f, 0.0f,   0.0f,  0.0f,      // Vertex 0 - 20
-        block_size, -block_size, -block_size,   0.0f,-1.0f, 0.0f,   1.0f,  0.0f,      // Vertex 1 - 21
-       -block_size, -block_size,  block_size,   0.0f,-1.0f, 0.0f,   0.0f,  1.0f / 3.0f, // Vertex 4 - 22
-        block_size, -block_size,  block_size,   0.0f,-1.0f, 0.0f,   1.0f,  1.0f / 3.0f, // Vertex 5 - 23
+       -_blockSize, -_blockSize, -_blockSize,   0.0f,-1.0f, 0.0f,   0.0f,  0.0f,      // Vertex 0 - 20
+        _blockSize, -_blockSize, -_blockSize,   0.0f,-1.0f, 0.0f,   1.0f,  0.0f,      // Vertex 1 - 21
+       -_blockSize, -_blockSize,  _blockSize,   0.0f,-1.0f, 0.0f,   0.0f,  1.0f / 3.0f, // Vertex 4 - 22
+        _blockSize, -_blockSize,  _blockSize,   0.0f,-1.0f, 0.0f,   1.0f,  1.0f / 3.0f, // Vertex 5 - 23
     };
     const GLuint index_array_data[] = {
         //Back face
@@ -58,30 +60,22 @@ Cube::Cube(const int x, const int y, const int z)
         20,23,22
     };
 
-    nverts = 24;
-    ntris = 12;
+    int nverts = 24; // Number of vertices in the vertex array
+    int ntris = 12;  // Number of triangles in the index array (may be zero)
+    size_t stride = 8;
 
-    for (size_t i = 0; i < 8 * nverts; i += 8)
-    {
-        vertex_array_data[i] += (2 * x);
-        vertex_array_data[i + 1] += (2 * y);
-        vertex_array_data[i + 2] += (2 * z);
-        //Do not translate normals
-        //vertex_array_data[i + 3] += (2 * x);
-        //vertex_array_data[i + 4] += (2 * y);
-        //vertex_array_data[i + 5] += (2 * z);
-    }
+    Cube::_translations.push_back(glm::vec3(x, y, z));
 
     // Generate one vertex array object (VAO) and bind it
-    glGenVertexArrays(1, &(vao));
-    glBindVertexArray(vao);
+    glGenVertexArrays(1, &(_vao));
+    glBindVertexArray(_vao);
 
     // Generate two buffer IDs
-    glGenBuffers(1, &vertexbuffer);
-    glGenBuffers(1, &indexbuffer);
+    glGenBuffers(1, &_vbo);
+    glGenBuffers(1, &_ebo);
 
     // Activate the vertex buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     // Present our vertex coordinates to OpenGL
     glBufferData(GL_ARRAY_BUFFER, 8 * nverts * sizeof(GLfloat), vertex_array_data, GL_STATIC_DRAW);
     // Specify how many attribute arrays we have in our VAO
@@ -93,16 +87,18 @@ Cube::Cube(const int x, const int y, const int z)
     // Number of dimensions (3 means vec3 in the shader, 2 means vec2)
     // Type GL_FLOAT
     // Not normalized (GL_FALSE)
-    // Stride 8 floats (interleaved array with 8 floats per vertex)
+    // Stride 11 floats (interleaved array with 8 floats per vertex)
     // Array buffer offset 0, 3 or 6 floats (offset into first vertex)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), nullptr); // xyz coordinates
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // normals
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat))); // texcoords
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), nullptr); // xyz coordinates
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat))); // normals
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat))); // texcoords
     
     // Activate the index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexbuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
     // Present our vertex indices to OpenGL
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * ntris * sizeof(GLuint), index_array_data, GL_STATIC_DRAW);
+
+
 
     // Deactivate (unbind) the VAO and the buffers again.
     // Do NOT unbind the index buffer while the VAO is still bound.
@@ -114,8 +110,8 @@ Cube::Cube(const int x, const int y, const int z)
 
 void Cube::render() const
 {
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, 3 * ntris, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(_vao);
+    glDrawElements(GL_TRIANGLES, 3 * 12, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
     glBindBuffer(0, 0);
 }

@@ -1,5 +1,6 @@
 #version 330 core
 float cnoise(vec3 P);
+float grassThreshold(float coeff);
 
 in vec3 position;
 in vec3 normal;
@@ -7,13 +8,14 @@ in vec3 light;
 in vec2 st;
 in flat uint surfaceDirection;
 
-float grassNoiseCoeff = st.t + 0.1*cnoise(position*7.5);
-vec3 green = vec3(0.0, 0.9, 0.0) * grassNoiseCoeff;
+float grassNoiseFrequency = 8.0;
+float grassNoiseCoeff = cnoise(position*grassNoiseFrequency);
+vec3 green = vec3(0.0, 0.85, 0.0) * grassThreshold(grassNoiseCoeff);
 
-float dirtNoiseCoeff = st.t*2.0 + 0.2*cnoise(position*2.5);
+float dirtNoiseCoeff = 0.7 + 0.4*cnoise(position*2.5);
 vec3 brown =  vec3(0.5, 0.25, 0.0) * dirtNoiseCoeff;
 
-float diffuse = max(0.0, dot(normal, light));  
+float diffuse = max(0.0, dot(normal, light));
 
 out vec4 color;
 void main()
@@ -24,7 +26,7 @@ void main()
         color = vec4(brown, 1.0);
     else //Middle
     {
-        float edge = step(st.t + 0.1*cnoise(position*1.1), 0.55);
+        float edge = step(st.t + 0.1*cnoise(position*1.3), 0.59);
         color = vec4(mix(green, brown, edge), 1.0);
     }
 }
@@ -36,6 +38,22 @@ void main()
 //  vec3 pattern = mix(green, brown, edge);
 //  gl_FragColor = vec4(pattern, 1.0);
 //}
+
+float grassThreshold(float coeff)
+{
+    float upperLimit = 0.6;
+    float middleLimit = 0.3;
+    float bottomLimit = 0.1;
+
+    if(coeff > upperLimit)
+        return 0.65;
+    else if(middleLimit < coeff && coeff < upperLimit)
+        return 0.55;
+    else if(bottomLimit < coeff && coeff < middleLimit)
+        return 0.53;
+    else
+        return 0.525;
+}
 
 vec3 mod289(vec3 x)
 {

@@ -1,8 +1,8 @@
 #version 330 core
-
 layout(location = 0) in vec3 _position;
 layout(location = 1) in vec3 _normal;
-layout(location = 2) in vec2 texCoord;
+layout(location = 2) in vec2 _texCoord;
+layout(location = 3) in vec3 _offset;
 
 uniform mat4 M;
 uniform mat4 V;
@@ -14,6 +14,20 @@ out vec3 normal;
 out vec3 light;
 out vec2 st;
 out uint surfaceDirection;
+
+uint checkSurface(vec3 normal);
+
+void main()
+{
+    //Out variables
+    position = _position + _offset*2.0;
+    light = mat3(M * V) * vec3(1.0, 1.0, 1.0);
+    normal = normalize(_normal);
+    surfaceDirection = checkSurface(_normal);
+    st = _texCoord;
+
+    gl_Position = P*V*M * vec4(position, 1.0);
+}
 
 vec3 upVec = vec3(0.0, 1.0, 0.0);
 vec3 sideVecX = vec3(1.0, 0.0, 0.0);
@@ -32,14 +46,3 @@ uint checkSurface(vec3 normal)
     else
         return 2; //Middle side
 }
-
-void main()
-{
-    light = mat3(M * V) * vec3(1.0, 1.0, 1.0);
-    gl_Position = P*V*M * vec4(_position, 1.f);
-    normal = normalize(_normal);
-    surfaceDirection = checkSurface(_normal);
-    st = texCoord;
-    position = _position;
-}
-//interpolatedNormal = mat3(M*V) * Normal;

@@ -1,6 +1,8 @@
 #pragma once
+#include <vector>
 
-#include <glad/glad.h>
+#include "glad/glad.h"
+#include "glm/glm.hpp"
 
 class Cube
 {
@@ -11,11 +13,15 @@ public:
     //Render the block
     void render() const;
 
+    GLuint getVAO() const { return _vao; }
+    static size_t getNumObjects() { return _translations.size(); }
+    static std::vector<glm::vec3> _translations;
+
 private:
     //OpenGL data
-    GLuint vao = 1; // Vertex array object, the main handle for geometry
-    int nverts; // Number of vertices in the vertex array
-    int ntris;  // Number of triangles in the index array (may be zero)
-    GLuint vertexbuffer; // Buffer ID to bind to GL_ARRAY_BUFFER
-    GLuint indexbuffer;  // Buffer ID to bind to GL_ELEMENT_ARRAY_BUFFER
+    const GLfloat _blockSize = 1.0f;
+    GLuint _vao = 1; //Vertex array object, the main handle for geometry    
+    GLuint _vbo; //Buffer ID to bind to GL_ARRAY_BUFFER
+    GLuint _ebo;  // BufferID to bind to GL_ELEMENT_ARRAY_BUFFER    
 };
+

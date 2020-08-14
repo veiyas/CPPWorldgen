@@ -13,6 +13,7 @@
 
 #include "cube.hpp"
 #include "shaderprogram.hpp"
+#include "world.hpp"
 
 //Initialize glfw, glad and create a window ready for rendering
 GLFWwindow* initOGL();
@@ -26,12 +27,13 @@ ShaderProgram loadShaderProgram(const std::string& shaderName);
 //Called by glfw
 void mouse_callback(GLFWwindow* window, double xpos = 0, double ypos = 0);
 
+//Necessary evil global variables
 //Debug controls
 float scale = 1.f;
 float scaleSpeed = 30.f;
 
 //Camera stuff
-constexpr float camSpeed = 30.f;
+constexpr float camSpeed = 50.f;
 glm::vec3 camPos = glm::vec3(0.f, 0.f, 3.f);
 glm::vec3 camFront = glm::vec3(0.f, 0.f, -1.f);
 glm::vec3 camUp = glm::vec3(0.f, 1.f, 0.f);
@@ -42,6 +44,12 @@ float lastX = 0.f;
 float lastY = 0.f;
 glm::vec3 direction;
 
+//Perspective stuff
+float vfov = 45;
+float aspect;
+float nearPlane = 1.f;
+float farPlane = 1000.f;
+
 int main()
 {
 	GLFWwindow* window = initOGL();
@@ -49,29 +57,16 @@ int main()
 	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	ShaderProgram shaderProgram = loadShaderProgram("cube");
 
-	std::vector<Cube> cubes;
-	size_t nCubes = 30;
-
-	for (size_t i = 0; i < nCubes; i++)
-	{
-		for (size_t j = 0; j < nCubes; j++)
-		{
-			cubes.push_back(Cube(i, j, -j));
-		}
-	}
 
 	auto mLocation = glGetUniformLocation(shaderProgram.getProgramId(), "M");
 	auto vLocation = glGetUniformLocation(shaderProgram.getProgramId(), "V");
-	auto pLocation = glGetUniformLocation(shaderProgram.getProgramId(), "P");
+	auto pLocation = glGetUniformLocation(shaderProgram.getProgramId(), "P");	
 	
-	float vfov = 45;
-	float aspect = static_cast<float>(vidmode->width / vidmode->height);
-	float nearPlane = 0.1f;
-	float farPlane = 1000.f;
-	glm::mat4 pMat = glm::perspective(glm::radians(vfov), aspect, nearPlane, farPlane);
+	aspect = (static_cast<float>(vidmode->width) / vidmode->height);
 
-	glm::mat4 vMat{ 1.f };
 	glm::mat4 mMat{ 1.f };
+	glm::mat4 vMat{ 1.f };
+	glm::mat4 pMat{ 1.f };
 
 	shaderProgram.bind();
 
@@ -80,7 +75,15 @@ int main()
 	glCullFace(GL_BACK);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //Wireframe
 
-	glUniformMatrix4fv(pLocation, 1, GL_FALSE, glm::value_ptr(pMat));
+	/********************************************************
+							Test Area
+	********************************************************/
+
+	World testWorld{};
+
+	/********************************************************
+							
+	********************************************************/
 
 	float currentTime = 0.0;
 	float deltaTime = 0.0;
@@ -100,26 +103,24 @@ int main()
 		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		camFront = glm::normalize(direction);
 
-		mMat = glm::scale(mMat, glm::vec3(scale, scale, scale));
+		mMat = glm::scale(mMat, glm::vec3(1.f, scale, 1.f));
 		vMat = glm::lookAt(camPos, camPos + camFront, camUp);
-
+		pMat = glm::perspective(glm::radians(vfov), aspect, nearPlane, farPlane);
 
 		//Copy matrices into shader and reset values
 		glUniformMatrix4fv(mLocation, 1, GL_FALSE, glm::value_ptr(mMat));
 		glUniformMatrix4fv(vLocation, 1, GL_FALSE, glm::value_ptr(vMat));
-		scale = 1.f;
+		glUniformMatrix4fv(pLocation, 1, GL_FALSE, glm::value_ptr(pMat));
+		scale = 1.0f;
 
 		// Set the clear color and depth, and clear the buffers for drawing
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/********************************************************
-								Test Area
+								Render Area
 		********************************************************/
-		for (const auto& cube : cubes)
-		{
-			cube.render();
-		}
+		testWorld.render();
 
 		// Swap buffers, i.e. display the image and prepare for next frame.
 		glfwSwapBuffers(window);
@@ -243,6 +244,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	camFront = glm::normalize(front);
 }
 
+void window_resized(GLFWwindow* window, int width, int height)
+{
+	aspect = (static_cast<float>(width) / height);
+	glViewport(0, 0, width, height);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glfwSwapBuffers(window);
+}
+
 GLFWwindow* initOGL()
 {	
 	glfwInit();
@@ -256,8 +265,8 @@ GLFWwindow* initOGL()
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	const int wWidth = vidmode->width / 1.5;
-	const int wHeight = vidmode->height / 1.5;
+	const int wWidth = vidmode->width / 1.2;
+	const int wHeight = vidmode->height / 1.2;
 	GLFWwindow* window = glfwCreateWindow(wWidth, wHeight, "CPPWorldgen", nullptr, nullptr);
 
 	if (!window)
@@ -270,6 +279,7 @@ GLFWwindow* initOGL()
 	glfwSwapInterval(0);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetWindowSizeCallback(window, window_resized);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -277,13 +287,10 @@ GLFWwindow* initOGL()
 		return nullptr;
 	}
 
-	glViewport(0, 0, wWidth, wHeight);
-
+	glViewport(0, 0, wWidth, wHeight); 
 	std::cout << glGetString(GL_VERSION) << '\n';
 
 	int nr_extensions = 0;
-	glGetIntegerv(GL_NUM_EXTENSIONS, &nr_extensions);	
-
-	std::cout << "done!\n";
+	glGetIntegerv(GL_NUM_EXTENSIONS, &nr_extensions);
 	return window;
 }

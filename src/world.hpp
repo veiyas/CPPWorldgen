@@ -12,9 +12,10 @@
 class World
 {
 public:
-	World();
-	void render() const;
+	World() = default;
+	World(size_t worldLength, size_t worldWidth, size_t maxHeight);
 
+	void render() const;
 private:
 	NoiseGenerator _ng;
 
@@ -23,18 +24,8 @@ private:
 
 	GLuint _instanceVBO;
 
-	const size_t _WORLDLENGTH = 100;
-	const size_t _WORLDWIDTH = 100;
-	const size_t _WORLDHEIGHT = 50;
+	const size_t _WORLDLENGTH;
+	const size_t _WORLDWIDTH;
+	const size_t _WORLDHEIGHT;
+	static constexpr double _noiseFrequency = 75.0;
 };
-
-//glm::mat4* positions = new glm::mat4[Cube::getNumObjects()];
-//
-//for (size_t i = 0; i < Cube::getNumObjects(); i++)
-//{
-//    glm::mat4 temp{ 1.f };
-//
-//    temp = glm::translate(temp, Cube::_translations[i]);
-//
-//    positions[i] = temp;
-//}

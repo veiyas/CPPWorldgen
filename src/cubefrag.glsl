@@ -8,6 +8,7 @@ in vec3 light;
 in vec2 st;
 in flat uint surfaceDirection;
 
+//Noise stuff
 float grassNoiseFrequency = 8.0;
 float grassNoiseCoeff = cnoise(position*grassNoiseFrequency);
 vec3 green = vec3(0.0, 0.85, 0.0) * grassThreshold(grassNoiseCoeff);
@@ -15,19 +16,22 @@ vec3 green = vec3(0.0, 0.85, 0.0) * grassThreshold(grassNoiseCoeff);
 float dirtNoiseCoeff = 0.7 + 0.4*cnoise(position*2.5);
 vec3 brown =  vec3(0.5, 0.25, 0.0) * dirtNoiseCoeff;
 
+//Light stuff
+float ambientStrength = 0.2;
 float diffuse = max(0.0, dot(normal, light));
+float lightContribution = ambientStrength + diffuse;
 
 out vec4 color;
 void main()
 {
     if(surfaceDirection == 0) //Top
-        color = vec4(green, 1.0);
+        color = vec4(green * lightContribution, 1.0);
     else if(surfaceDirection == 1) //Bottom
-        color = vec4(brown, 1.0);
+        color = vec4(brown * lightContribution, 1.0);
     else //Middle
     {
         float edge = step(st.t + 0.1*cnoise(position*1.3), 0.59);
-        color = vec4(mix(green, brown, edge), 1.0);
+        color = vec4(mix(green, brown, edge) * lightContribution, 1.0);
     }
 }
 

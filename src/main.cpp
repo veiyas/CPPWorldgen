@@ -48,19 +48,26 @@ glm::vec3 direction;
 float vfov = 45;
 float aspect;
 float nearPlane = 1.f;
-float farPlane = 1000.f;
+float farPlane = 10000.f;
 
 int main()
 {
+
+	/********************************************************
+							Graphics
+	********************************************************/
 	GLFWwindow* window = initOGL();
 	assert(window != nullptr);
 	const GLFWvidmode* vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	ShaderProgram shaderProgram = loadShaderProgram("cube");
 
-
-	auto mLocation = glGetUniformLocation(shaderProgram.getProgramId(), "M");
 	auto vLocation = glGetUniformLocation(shaderProgram.getProgramId(), "V");
 	auto pLocation = glGetUniformLocation(shaderProgram.getProgramId(), "P");	
+	auto timeLocation = glGetUniformLocation(shaderProgram.getProgramId(), "time");
+	auto widthLocation = glGetUniformLocation(shaderProgram.getProgramId(), "worldWidth");
+	auto lengthLocation = glGetUniformLocation(shaderProgram.getProgramId(), "worldLength");
+	auto heightLocation = glGetUniformLocation(shaderProgram.getProgramId(), "worldHeight");
+	auto blockSizeLocation = glGetUniformLocation(shaderProgram.getProgramId(), "blockSizeOffset");
 	
 	aspect = (static_cast<float>(vidmode->width) / vidmode->height);
 
@@ -78,13 +85,20 @@ int main()
 	/********************************************************
 							Test Area
 	********************************************************/
+	size_t worldLength = 200;
+	size_t worldWidth = 200;
+	size_t worldHeight = 70;
 
-	World testWorld{};
+	World testWorld{ worldLength, worldWidth, worldHeight };
+
+	glUniform1ui(widthLocation, worldWidth);
+	glUniform1ui(lengthLocation, worldLength);
+	glUniform1ui(heightLocation, worldHeight);
+	glUniform1f(blockSizeLocation, Cube::getBlockSizeOffset());
 
 	/********************************************************
-							
+							Bookkeeping
 	********************************************************/
-
 	float currentTime = 0.0;
 	float deltaTime = 0.0;
 	std::string fpsString;
@@ -108,7 +122,6 @@ int main()
 		pMat = glm::perspective(glm::radians(vfov), aspect, nearPlane, farPlane);
 
 		//Copy matrices into shader and reset values
-		glUniformMatrix4fv(mLocation, 1, GL_FALSE, glm::value_ptr(mMat));
 		glUniformMatrix4fv(vLocation, 1, GL_FALSE, glm::value_ptr(vMat));
 		glUniformMatrix4fv(pLocation, 1, GL_FALSE, glm::value_ptr(pMat));
 		scale = 1.0f;
@@ -254,6 +267,7 @@ void window_resized(GLFWwindow* window, int width, int height)
 
 GLFWwindow* initOGL()
 {	
+	
 	glfwInit();
 	if (!glfwInit()) {
 		std::cerr << "GLFW was not initialized properly" << '\n';

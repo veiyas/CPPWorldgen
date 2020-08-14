@@ -2,12 +2,15 @@
 layout(location = 0) in vec3 _position;
 layout(location = 1) in vec3 _normal;
 layout(location = 2) in vec2 _texCoord;
-layout(location = 3) in vec3 _offset;
+layout(location = 3) in mat4 _offset;
 
-uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 uniform float time;
+uniform uint worldWidth;
+uniform uint worldLength;
+uniform uint worldHeight;
+uniform float blockSizeOffset;
 
 out vec3 position;
 out vec3 normal;
@@ -20,13 +23,13 @@ uint checkSurface(vec3 normal);
 void main()
 {
     //Out variables
-    position = _position + _offset*2.0;
-    light = mat3(M * V) * vec3(1.0, 1.0, 1.0);
-    normal = normalize(_normal);
+    position = vec3(_offset * vec4(_position * (1.0/blockSizeOffset), 1.0));
+    light = normalize(vec3(worldWidth/100, 0, worldLength/100));
+    normal = normalize(vec3(_offset * vec4(_normal * (1.0/blockSizeOffset), 1.0)));
     surfaceDirection = checkSurface(_normal);
     st = _texCoord;
 
-    gl_Position = P*V*M * vec4(position, 1.0);
+    gl_Position = P*V*vec4(position, 1.0);
 }
 
 vec3 upVec = vec3(0.0, 1.0, 0.0);

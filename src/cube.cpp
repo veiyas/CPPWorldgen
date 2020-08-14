@@ -1,10 +1,10 @@
 #include "cube.hpp"
 
-std::vector<glm::vec3> Cube::_translations;
+std::vector<glm::mat4> Cube::_translations;
+const GLfloat Cube::_blockSize = 1.0f;
 
 Cube::Cube(const int x, const int y, const int z)
-{
-    
+{    
     // The data array contains 8 floats per vertex:
     // coordinate xyz, normal xyz, texcoords st
     GLfloat vertex_array_data[] = {
@@ -64,7 +64,9 @@ Cube::Cube(const int x, const int y, const int z)
     int ntris = 12;  // Number of triangles in the index array (may be zero)
     size_t stride = 8;
 
-    Cube::_translations.push_back(glm::vec3(x, y, z));
+    glm::mat4 tempTransMat{ 1.f };
+    tempTransMat = glm::translate(tempTransMat, glm::vec3(x, y, z));
+    Cube::_translations.push_back(tempTransMat);
 
     // Generate one vertex array object (VAO) and bind it
     glGenVertexArrays(1, &(_vao));

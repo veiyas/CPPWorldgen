@@ -1,3 +1,5 @@
+//#include<vld.h>
+
 #include <iostream>
 #include <cassert>
 #include <filesystem>
@@ -53,6 +55,11 @@ float farPlane = 10000.f;
 //
 World theWorld;
 
+constexpr size_t worldLength= 200;
+constexpr size_t worldWidth= 200;
+constexpr size_t worldHeight = 70;
+
+
 int main()
 {
 
@@ -89,10 +96,6 @@ int main()
 	/********************************************************
 							Test Area
 	********************************************************/
-	size_t worldLength = 200;
-	size_t worldWidth = 200;
-	size_t worldHeight = 70;
-
 	theWorld = World{worldLength, worldWidth, worldHeight};
 
 	glUniform1ui(widthLocation, worldWidth);
@@ -152,6 +155,7 @@ int main()
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+	_CrtDumpMemoryLeaks();
 	return 0;
 }
 
@@ -185,7 +189,8 @@ void processInput(GLFWwindow* window, float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		theWorld.recreateWorld(200, 200, 70);
+		theWorld.recreateWorld(worldLength, worldWidth, worldHeight);
+		//theWorld = World{ worldLength, worldWidth, worldHeight };
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{

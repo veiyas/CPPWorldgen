@@ -9,7 +9,12 @@ class Cube
 {
 public:
     Cube(const int x, const int y, const int z);
-    ~Cube() = default;
+    ~Cube()
+    {
+        glDeleteVertexArrays(1, &_vao);
+        glDeleteBuffers(1, &_vbo);
+        glDeleteBuffers(1, &_ebo);
+    };
 
     //Render the block
     void render() const;

@@ -2,7 +2,7 @@
 #include <tuple>
 #include <chrono>
 #include <iostream>
-#include <algorithm>
+#include <memory>
 
 #include "glad/glad.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,7 +20,7 @@ public:
 	void recreateWorld(size_t worldLength, size_t worldWidth, size_t maxHeight);
 private:
 	NoiseGenerator _ng;
-	std::vector<Cube> _theWorld;
+	std::vector<std::unique_ptr<Cube>> _theWorld;
 	GLuint _instanceVBO;
 
 	static constexpr double _noiseFrequency = 75.0;

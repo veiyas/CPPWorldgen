@@ -13,7 +13,7 @@ void World::render() const
 	//	cube.render();
 	//}
 
-	glBindVertexArray(_theWorld[0].getVAO());
+	glBindVertexArray(_theWorld[0]->getVAO());
 	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0, (GLsizei)_theWorld.size());
 	glBindVertexArray(0);
 }
@@ -33,11 +33,14 @@ void World::createWorld(size_t worldLength, size_t worldWidth, size_t maxHeight,
 			xSeed = static_cast<double>(i) / _noiseFrequency;
 			ySeed = static_cast<double>(j) / _noiseFrequency;
 			blockHeight = std::floor(_ng.perlinNoise(xSeed, ySeed) * maxHeight);
-			_theWorld.emplace_back(i, blockHeight, j);
+			_theWorld.emplace_back(std::unique_ptr<Cube>( new Cube(i, blockHeight, j)));
 		}
 	}
 
+	std::cout << "Reserved size: " << _theWorld.capacity() << "\n";
+
 	if (!replace) { glGenBuffers(1, &_instanceVBO); }
+	
 	glBindBuffer(GL_ARRAY_BUFFER, _instanceVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * Cube::_translations.size(), Cube::_translations.data(), GL_STATIC_DRAW);
 
@@ -45,7 +48,7 @@ void World::createWorld(size_t worldLength, size_t worldWidth, size_t maxHeight,
 	//We're sending each instance array as a mat4 which consumes 4 consecutive layout locations
 	for (size_t i = 0; i < _theWorld.size(); i++)
 	{
-		GLuint tempVAO = _theWorld[i].getVAO();
+		GLuint tempVAO = _theWorld[i]->getVAO();
 		glBindVertexArray(tempVAO);
 		glEnableVertexAttribArray(3);
 		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);

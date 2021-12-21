@@ -75,12 +75,12 @@ double NoiseGenerator::perlinNoise(double x, double z, double y)
 	double w = fade(z);
 
 	// Hash coordinates of the 8 cube corners
-	int A = _permutation[X] + Y;
-	int AA = _permutation[A] + Z;
-	int AB = _permutation[A + 1] + Z;
-	int B = _permutation[X + 1] + Y;
-	int BA = _permutation[B] + Z;
-	int BB = _permutation[B + 1] + Z;
+	int A = (_permutation[X] + Y) % 256;
+	int AA = (_permutation[A] + Z) % 256;
+	int AB = (_permutation[A + 1] + Z) % 256;
+	int B = (_permutation[X + 1] + Y) % 256;
+	int BA = (_permutation[B] + Z) % 256;
+	int BB = (_permutation[B + 1] + Z) % 256;
 
 	// Add blended results from 8 corners of cube
 	double res = lerp(w, lerp(v, lerp(u, grad(_permutation[AA], x, y, z), grad(_permutation[BA], x - 1, y, z)), lerp(u, grad(_permutation[AB], x, y - 1, z), grad(_permutation[BB], x - 1, y - 1, z))), lerp(v, lerp(u, grad(_permutation[AA + 1], x, y, z - 1), grad(_permutation[BA + 1], x - 1, y, z - 1)), lerp(u, grad(_permutation[AB + 1], x, y - 1, z - 1), grad(_permutation[BB + 1], x - 1, y - 1, z - 1))));

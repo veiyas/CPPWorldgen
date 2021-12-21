@@ -50,6 +50,9 @@ float aspect;
 float nearPlane = 1.f;
 float farPlane = 10000.f;
 
+//
+World theWorld;
+
 int main()
 {
 
@@ -90,7 +93,7 @@ int main()
 	size_t worldWidth = 200;
 	size_t worldHeight = 70;
 
-	World testWorld{ worldLength, worldWidth, worldHeight };
+	theWorld = World{worldLength, worldWidth, worldHeight};
 
 	glUniform1ui(widthLocation, worldWidth);
 	glUniform1ui(lengthLocation, worldLength);
@@ -136,7 +139,7 @@ int main()
 		/********************************************************
 								Render Area
 		********************************************************/
-		testWorld.render();
+		theWorld.render();
 
 		// Swap buffers, i.e. display the image and prepare for next frame.
 		glfwSwapBuffers(window);
@@ -182,7 +185,7 @@ void processInput(GLFWwindow* window, float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		scale += scaleSpeed * deltaTime;
+		theWorld.recreateWorld(200, 200, 70);
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{

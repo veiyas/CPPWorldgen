@@ -11,20 +11,22 @@
 class NoiseGenerator
 {
 public:
-    NoiseGenerator();
+    NoiseGenerator() = default;
     NoiseGenerator(unsigned seed);
 
     double perlinNoise(double x, double y);
     double perlinNoise(double x, double y, double z);
 
+    void updateSeed(unsigned seed);
+
 private:
-//Data members
+    //Data members
     std::vector<int> _permutation;
 
-//Seed choice
+    //Seed choice
     bool seeded;
 
-//Methods
+    //Methods
     double fade(double t);
     double lerp(double w, double a, double b);
     double grad(int hs, double x, double y, double z);
